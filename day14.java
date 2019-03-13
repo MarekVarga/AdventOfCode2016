@@ -1,4 +1,5 @@
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class day14 {
@@ -12,7 +13,7 @@ public class day14 {
             char tmp;
             String hash;
             if (!hashes.containsKey(i)) {
-                hash = getHash(i, null, 1);
+                hash = getHash(i, null, 1, null);
             } else {
                 hash = hashes.get(i);
             }
@@ -34,9 +35,9 @@ public class day14 {
             char tmp;
             String stretchedHash;
             if (!hashes.containsKey(i)) {
-                stretchedHash = getHash(i, null, 1);
+                stretchedHash = getHash(i, null, 1, null);
                 for (int j = 0; j < 2016; j++) {
-                    stretchedHash = getHash(j, stretchedHash.toLowerCase(), 2);
+                    stretchedHash = getHash(j, stretchedHash.toLowerCase(), 2, "");
                 }
             } else {
                 stretchedHash = hashes.get(i);
@@ -58,10 +59,11 @@ public class day14 {
      * @param index long index of current hash
      * @param hash String hash of current hash (required only for part 2)
      * @param part int number of part currently solved
+     * @param pathTaken String representing path taken (required for day 17)
      *
      * @return String representing MD5 hash
      */
-    private static String getHash(long index, String hash, int part) {
+    public static String getHash(long index, String hash, int part, String pathTaken) {
         final String salt = "ngcjuoqr";
 
         try {
@@ -69,7 +71,7 @@ public class day14 {
             if (part == 1) {
                 bytes = salt.concat(String.valueOf(index)).getBytes("UTF-8");
             } else {
-                bytes = hash.getBytes("UTF-8");
+                bytes = hash.concat(pathTaken).getBytes("UTF-8");
             }
             MessageDigest md = MessageDigest.getInstance("MD5");
             byte[] digest = md.digest(bytes);
@@ -125,10 +127,10 @@ public class day14 {
         for (long i = currentIndex+1; i < currentIndex+1001; i++) {
             String hash;
             if (!hashes.containsKey(i)) {
-                hash = getHash(i, null, 1);     // find MD5 hash
+                hash = getHash(i, null, 1, null);     // find MD5 hash
                 if (part != 1) {
                     for (int j = 0; j < 2016; j++) {            // find 2016 MD5 heshes of current hash - for part 2
-                        hash = getHash(j, hash.toLowerCase(), 2);
+                        hash = getHash(j, hash.toLowerCase(), 2, "");
                     }
                 }
                 hashes.put(i, hash);             // store hash in hashMap
